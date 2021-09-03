@@ -2,20 +2,20 @@ FROM node:12-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json /app/
 RUN npm install
 
-COPY . .
+COPY . /app/
 RUN npm run build
 
 FROM mhart/alpine-node:12 as release
 
 WORKDIR /app
 
-COPY --from=build ./app/package*.json .
+COPY --from=build ./app/package*.json /app/
 RUN npm ci --only=production && npm cache clean --force
 
-COPY --from=build ./app/dist ./
+COPY --from=build ./app/dist /app/
 
 EXPOSE 4000
 
